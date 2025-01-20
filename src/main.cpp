@@ -27,7 +27,6 @@ int center2 = 0;
 int center3 = 0;
 int center4 = 0;
 
-
 String value1;
 String value2;
 String value3;
@@ -71,6 +70,8 @@ void loop()
   if (Serial.available())
   {
 
+    String valuee;
+    int bole = 0;
     byte bufer[64];
     int len = Serial.readBytes(bufer, 64);
     drawline();
@@ -79,12 +80,14 @@ void loop()
 
       if (bufer[i] == 40 && bufer[i + 1] == 112 && bufer[i + 2] == 105 && bufer[i + 3] == 110 && bufer[i + 4] == 103 && bufer[i + 5] == 41)
       {
+        bole = 1;
         Serial.println("Modul Matrix Active");
       }
 
       if (bufer[i] == 40 && bufer[i + 1] == 99 && bufer[i + 2] == 108 && bufer[i + 3] == 101 && bufer[i + 4] == 97 && bufer[i + 5] == 114 && bufer[i + 6] == 41)
       {
-        Serial.println("clear");
+        bole = 2;
+        // Serial.println("clear");
         dma_display->clearScreen();
         delay(10);
         drawline();
@@ -92,7 +95,7 @@ void loop()
 
       if (bufer[i] == 40 && bufer[i + 1] == 66 && bufer[i + 2] == 44)
       {
-        String valuee;
+        bole = 3;
         for (int j = i + 3; bufer[j] != 41; j++)
         {
           char charbuf = (char)bufer[j];
@@ -105,6 +108,7 @@ void loop()
       // PANEL 1
       if (bufer[i] == 40 && bufer[i + 1] == 49 && bufer[i + 2] == 44)
       {
+        bole = 4;
         drawText5x7(value1, 0 + center1 + 2, 9, dma_display->color565(0, 0, 0));
         center1 = 0;
         value1 = "";
@@ -117,13 +121,14 @@ void loop()
         }
         center1 = ((30 / 2) - (center1 / 2));
         drawText5x7(value1, 0 + center1 + 2, 9, dma_display->color565(255, 255, 255));
-        Serial.println(value1);
+        // Serial.println("{ \"led1\" : true }");
       }
 
       // PANEL 2
       if (bufer[i] == 40 && bufer[i + 1] == 50 && bufer[i + 2] == 44)
       {
-        drawText5x7(value2, 33 + center2 - 2 , 8, dma_display->color565(0, 0, 0));
+        bole = 4;
+        drawText5x7(value2, 33 + center2 - 2, 8, dma_display->color565(0, 0, 0));
         center2 = 0;
         value2 = "";
         for (int j = i + 3; bufer[j] != 41; j++)
@@ -135,12 +140,13 @@ void loop()
         }
         center2 = ((30 / 2) - (center2 / 2));
         drawText5x7(value2, 33 + center2 - 2, 8, dma_display->color565(255, 255, 255));
-        Serial.println(value2);
+        // Serial.println("{ \"led2\" : true }");
       }
 
       // PANEL 3
       if (bufer[i] == 40 && bufer[i + 1] == 51 && bufer[i + 2] == 44)
       {
+        bole = 4;
         drawText5x7(value3, 0 + center3 - 1, 25, dma_display->color565(0, 0, 0));
         center3 = 0;
         value3 = "";
@@ -152,13 +158,14 @@ void loop()
           value3 += strbuf;
         }
         center3 = ((30 / 2) - (center3 / 2));
-        drawText5x7(value3, 0 + center3 -1, 25, dma_display->color565(255, 255, 255));
-        Serial.println(value3);
+        drawText5x7(value3, 0 + center3 - 1, 25, dma_display->color565(255, 255, 255));
+        // Serial.println("{ \"led3\" : true }");
       }
 
       // PANEL 4
       if (bufer[i] == 40 && bufer[i + 1] == 52 && bufer[i + 2] == 44)
       {
+        bole = 4;
         drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
         center4 = 0;
         value4 = "";
@@ -171,8 +178,33 @@ void loop()
         }
         center4 = ((30 / 2) - (center4 / 2));
         drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
-        Serial.println(value4);
+        // Serial.println("{ \"led4\" : true }");
       }
     }
+    switch (bole)
+    {
+    case 1:
+      break;
+    case 2:
+      Serial.print("{ \"clear\" : true }");
+      break;
+    case 3:
+      Serial.print("{ \"Brightness\" : " + valuee + " }");
+      break;
+    case 4:
+      Serial.print("{ \"led\" : true }");
+      break;
+    default:
+      Serial.print("{ \"Error\" : Format command not found }");
+      break;
+    }
+    // if (bole)
+    // {
+    //   Serial.println("{ \"led4\" : true }");
+    // }
+    // else
+    // {
+    //   Serial.println("{ \"Error\" : Format command not found }")
+    // }
   }
 }
