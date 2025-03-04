@@ -1,6 +1,8 @@
 #include <ESP32-HUB75-MatrixPanel-I2S-DMA.h>
 #include <iostream>
 #include "matrixMod.h"
+#include "errOTA.h"
+// #include "errOTA.h"
 using namespace std;
 // Konfigurasi pin
 #define R1_PIN 25
@@ -37,9 +39,13 @@ HUB75_I2S_CFG::i2s_pins _pins = {
     A_PIN, B_PIN, C_PIN, D_PIN, -1, LAT_PIN, OE_PIN, CLK_PIN};
 
 ////////////////////////////
+String val1 = "";
+String val2 = "";
+String val3 = "";
+String val4 = "";
 
 unsigned long lastmillisbutton;
-void setup()
+void setup(void)
 {
   Serial.begin(9600);
   HUB75_I2S_CFG mxconfig(
@@ -48,6 +54,8 @@ void setup()
       PANEL_CHAIN, // Jumlah panel
       _pins        // Konfigurasi pin
   );
+
+  setupOTA();
 
   mxconfig.clkphase = false;
   mxconfig.driver = HUB75_I2S_CFG::FM6126A;
@@ -61,11 +69,15 @@ void setup()
   myRED = dma_display->color565(255, 0, 0);
   myGREEN = dma_display->color565(0, 255, 0);
   myBLUE = dma_display->color565(0, 0, 255);
-  drawline();
+  // drawline();
+  delay(5000);
+  Serial.print("{ \"led\" : true }");
+  drawline(0 , "");
 }
-
-void loop()
+void loop(void)
 {
+  server.handleClient();
+  ElegantOTA.loop();
 
   if (Serial.available())
   {
@@ -74,7 +86,7 @@ void loop()
     int bole = 0;
     byte bufer[64];
     int len = Serial.readBytes(bufer, 64);
-    drawline();
+    // drawline();
     for (int i = 0; i < len; i++)
     {
 
@@ -90,7 +102,10 @@ void loop()
         // Serial.println("clear");
         dma_display->clearScreen();
         delay(10);
-        drawline();
+        drawline(1, val1);
+        drawline(2, val2);
+        drawline(3, val3);
+        drawline(4, val4);
       }
 
       if (bufer[i] == 40 && bufer[i + 1] == 66 && bufer[i + 2] == 44)
@@ -180,7 +195,122 @@ void loop()
         drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
         // Serial.println("{ \"led4\" : true }");
       }
+
+      if (bufer[i] == 40 && bufer[i + 1] == 83 && bufer[i + 2] == 44)
+      {
+        bole = 5;
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
+        // center4 = 0;
+        // value4 = "";
+        String staticled = "";
+        for (int j = i + 3; bufer[j] != 41; j++)
+        {
+          center4 += 5;
+          char charbuf = (char)bufer[j];
+          String strbuf = String(charbuf);
+          staticled += strbuf;
+        }
+        // Serial.print(staticled);
+        drawline(0, staticled);
+        val1 = staticled;
+        val2 = staticled;
+        val3 = staticled;
+        val4 = staticled;
+        // center4 = ((30 / 2) - (center4 / 2));
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
+        // // Serial.println("{ \"static\" : true }");
+      }
+
+      //////////////////////////////
+      if (bufer[i] == 40 && bufer[i + 1] == 83 && bufer[i + 2] == 49 && bufer[i + 3] == 44)
+      {
+        bole = 5;
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
+        // center4 = 0;
+        // value4 = "";
+        String staticled = "";
+        for (int j = i + 3; bufer[j] != 41; j++)
+        {
+          center4 += 5;
+          char charbuf = (char)bufer[j];
+          String strbuf = String(charbuf);
+          staticled += strbuf;
+        }
+        // Serial.print(staticled);
+        drawline(1, staticled);
+        val1 = staticled;
+        // center4 = ((30 / 2) - (center4 / 2));
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
+        // // Serial.println("{ \"static\" : true }");
+      }
+
+      if (bufer[i] == 40 && bufer[i + 1] == 83 && bufer[i + 2] == 50 && bufer[i + 3] == 44)
+      {
+        bole = 5;
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
+        // center4 = 0;
+        // value4 = "";
+        String staticled = "";
+        for (int j = i + 3; bufer[j] != 41; j++)
+        {
+          center4 += 5;
+          char charbuf = (char)bufer[j];
+          String strbuf = String(charbuf);
+          staticled += strbuf;
+        }
+        // Serial.print(staticled);
+        drawline(2, staticled);
+        val2 = staticled;
+        // center4 = ((30 / 2) - (center4 / 2));
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
+        // // Serial.println("{ \"static\" : true }");
+      }
+
+      if (bufer[i] == 40 && bufer[i + 1] == 83 && bufer[i + 2] == 51 && bufer[i + 3] == 44)
+      {
+        bole = 5;
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
+        // center4 = 0;
+        // value4 = "";
+        String staticled = "";
+        for (int j = i + 3; bufer[j] != 41; j++)
+        {
+          center4 += 5;
+          char charbuf = (char)bufer[j];
+          String strbuf = String(charbuf);
+          staticled += strbuf;
+        }
+        // Serial.print(staticled);
+        drawline(3, staticled);
+        val3 = staticled;
+        // center4 = ((30 / 2) - (center4 / 2));
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
+        // // Serial.println("{ \"static\" : true }");
+      }
+
+      if (bufer[i] == 40 && bufer[i + 1] == 83 && bufer[i + 2] == 52 && bufer[i + 3] == 44)
+      {
+        bole = 5;
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(0, 0, 0));
+        // center4 = 0;
+        // value4 = "";
+        String staticled = "";
+        for (int j = i + 3; bufer[j] != 41; j++)
+        {
+          center4 += 5;
+          char charbuf = (char)bufer[j];
+          String strbuf = String(charbuf);
+          staticled += strbuf;
+        }
+        // Serial.print(staticled);
+        drawline(4, staticled);
+        val4 = staticled;
+        // center4 = ((30 / 2) - (center4 / 2));
+        // drawText5x7(value4, 33 + center4 - 2, 25, dma_display->color565(255, 255, 255));
+        // // Serial.println("{ \"static\" : true }");
+      }
     }
+
     switch (bole)
     {
     case 1:
@@ -193,6 +323,9 @@ void loop()
       break;
     case 4:
       Serial.print("{ \"led\" : true }");
+      break;
+    case 5:
+      Serial.print("{ \"set\" : true }");
       break;
     default:
       Serial.print("{ \"Error\" : Format command not found }");

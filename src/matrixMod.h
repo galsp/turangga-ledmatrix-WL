@@ -530,18 +530,23 @@ void drawChar5x6(char c, int x, int y, uint16_t color)
     }
   }
 }
-void drawChar5x7(char c, int x, int y, uint16_t color) {
-    if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
-        const uint8_t *bitmap = (c >= 'A') ? font5x7[c - 'A'] : font5x7[c - '0' + 26];
+void drawChar5x7(char c, int x, int y, uint16_t color)
+{
+  if ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
+  {
+    const uint8_t *bitmap = (c >= 'A') ? font5x7[c - 'A'] : font5x7[c - '0' + 26];
 
-        for (int col = 0; col < 5; col++) { // 5 columns
-            for (int row = 0; row < 7; row++) { // 7 rows
-                if (bitmap[col] & (1 << row)) { // Check if the bit is set
-                    errdrawPixel(x + col, y + row, color); // Replace `errdrawPixel` with your pixel-drawing function
-                }
-            }
+    for (int col = 0; col < 5; col++)
+    { // 5 columns
+      for (int row = 0; row < 7; row++)
+      { // 7 rows
+        if (bitmap[col] & (1 << row))
+        {                                        // Check if the bit is set
+          errdrawPixel(x + col, y + row, color); // Replace `errdrawPixel` with your pixel-drawing function
         }
+      }
     }
+  }
 }
 
 // Fungsi untuk menggambar teks dengan ukuran yang dapat diubah
@@ -706,16 +711,23 @@ void drawText5x6(String text, int x, int y, uint16_t color)
     x += 6; // Tambahkan 5 piksel lebar + 1 piksel jarak antar karakter
   }
 }
-void drawText5x7(String text, int x, int y, uint16_t color) {
-    int spacing = 1; // Space between characters
-    for (int i = 0; i < text.length(); i++) {
-        char c = text[i];
-        drawChar5x7(c, x + (i * (5 + spacing)), y, color);
-    }
-}
-
-void drawline()
+void drawText5x7(String text, int x, int y, uint16_t color)
 {
+  int spacing = 1; // Space between characters
+  for (int i = 0; i < text.length(); i++)
+  {
+    char c = text[i];
+    drawChar5x7(c, x + (i * (5 + spacing)), y, color);
+  }
+}
+String last1 = "";
+String last2 = "";
+String last3 = "";
+String last4 = ""; 
+void drawline(int n, String val)
+{
+
+  // dma_display->clearScreen();
   // dma_display->clearScreen();
   for (int i = 0; i < 32; i++)
   {
@@ -727,17 +739,55 @@ void drawline()
     errdrawPixel(i, 16, myRED);
     delay(1);
   }
+  //  String val = "WL";
+  int geser = 0;
 
-  int geser = 9;
-  drawText7x8("W", 10, 0, dma_display->color565(255, 255, 255));
-  drawText7x8("L", 10 + geser, 0, dma_display->color565(255, 255, 255));
-
-  drawText7x8("W", 43, 0, dma_display->color565(255, 255, 255));
-  drawText7x8("L", 43 + geser, 0, dma_display->color565(255, 255, 255));
-
-  drawText7x8("W", 10, 17, dma_display->color565(255, 255, 255));
-  drawText7x8("L", 10 + geser, 17, dma_display->color565(255, 255, 255));
-
-  drawText7x8("W", 43, 17, dma_display->color565(255, 255, 255));
-  drawText7x8("L", 43 + geser, 17, dma_display->color565(255, 255, 255));
+  if (n == 1)
+  {
+    
+    drawText7x8(last1, 15 - (last1.length() * 7 / 2) + geser, 0, dma_display->color565(0, 0, 0));
+    drawText7x8(val, 15 - (val.length() * 7 / 2)+ geser, 0, dma_display->color565(255, 255, 255));
+    last1 = val;
+    // drawText7x8("L", 10 + geser, 0, dma_display->color565(255, 255, 255));
+  }
+  else if (n == 2)
+  {
+    drawText7x8(last2, 47 - (last2.length() * 7 / 2)+ geser, 0, dma_display->color565(0, 0, 0));
+    drawText7x8(val, 47 - (val.length() * 7 / 2)+ geser, 0, dma_display->color565(255, 255, 255));
+    last2 = val;
+    // drawText7x8("L", 43 + geser, 0, dma_display->color565(255, 255, 255));
+  }
+  else if (n == 3)
+  {
+    drawText7x8(last3, 15 - (last3.length() * 7 / 2)+ geser, 17, dma_display->color565(0, 0, 0));
+    drawText7x8(val, 15 - (val.length() * 7 / 2)+ geser, 17, dma_display->color565(255, 255, 255));
+    last3 = val;
+    // drawText7x8("L", 10 + geser, 17, dma_display->color565(255, 255, 255));
+  }
+  else if (n == 4)
+  {
+    drawText7x8(last4, 47 - (last4.length() * 7 / 2)+ geser, 17, dma_display->color565(0, 0, 0));
+    drawText7x8(val, 47 - (val.length() * 7 / 2)+ geser, 17, dma_display->color565(255, 255, 255));
+    last4 = val;
+    // drawText7x8("L", 43 + geser, 17, dma_display->color565(255, 255, 255));
+  }
+  else {
+    drawText7x8(last1, 15 - (last1.length() * 7 / 2), 0, dma_display->color565(0, 0, 0));
+    drawText7x8(last2, 47 - (last2.length() * 7 / 2), 0, dma_display->color565(0, 0, 0));
+    drawText7x8(last3, 15 - (last3.length() * 7 / 2), 17, dma_display->color565(0, 0, 0));
+    drawText7x8(last4, 47 - (last4.length() * 7 / 2), 17, dma_display->color565(0, 0, 0));
+    
+    drawText7x8(last1, 15 - (last1.length() * 7 / 2)+ geser, 0, dma_display->color565(0, 0, 0));
+    drawText7x8(last2, 47 - (last2.length() * 7 / 2)+ geser, 0, dma_display->color565(0, 0, 0));
+    drawText7x8(last3, 15 - (last3.length() * 7 / 2)+ geser, 17, dma_display->color565(0, 0, 0));
+    drawText7x8(last4, 47 - (last4.length() * 7 / 2)+ geser, 17, dma_display->color565(0, 0, 0));
+    last1 = val;
+    last2 = val;
+    last3 = val;
+    last4 = val;
+    drawText7x8(val, 15 - (val.length() * 7 / 2), 0, dma_display->color565(255, 255, 255));
+    drawText7x8(val, 47 - (val.length() * 7 / 2), 0, dma_display->color565(255, 255, 255));
+    drawText7x8(val, 15 - (val.length() * 7 / 2), 17, dma_display->color565(255, 255, 255));
+    drawText7x8(val, 47 - (val.length() * 7 / 2), 17, dma_display->color565(255, 255, 255));
+  }
 }
